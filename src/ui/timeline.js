@@ -105,20 +105,29 @@ export class TimelineController {
   togglePlay() {
     if (this._playing) {
       this.stopPlay();
-    } else {
-      this._playing = true;
-      this.playBtn.classList.add('is-playing');
-      this.playBtn.textContent = '⏸';
-      const delay = this._speed === 2 ? 1200 : 2200;
-      this._playTimer = setInterval(() => {
-        const next = this.milestones.find((m) => m.year > this.year);
-        if (!next) {
-          this.stopPlay();
-          return;
-        }
-        this.setYear(next.year);
-      }, delay);
+      return;
     }
+    this._playing = true;
+    this.playBtn.classList.add('is-playing');
+    this.playBtn.textContent = '⏸';
+
+    // Immediately step to the next milestone (or restart from the beginning if at the last year)
+    const firstNext = this.milestones.find((m) => m.year > this.year);
+    if (firstNext) {
+      this.setYear(firstNext.year);
+    } else if (this.milestones.length) {
+      this.setYear(this.milestones[0].year);
+    }
+
+    const delay = this._speed === 2 ? 1100 : 2000;
+    this._playTimer = setInterval(() => {
+      const next = this.milestones.find((m) => m.year > this.year);
+      if (!next) {
+        this.stopPlay();
+        return;
+      }
+      this.setYear(next.year);
+    }, delay);
   }
 
   stopPlay() {

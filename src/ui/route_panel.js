@@ -22,6 +22,7 @@ export class RoutePanel {
   }
 
   open(route, stopIdx = 0) {
+    this.stopPlay();
     this._route = route;
     this._stopIdx = Math.max(0, Math.min(route.stops.length - 1, stopIdx));
     this.render();
@@ -35,19 +36,23 @@ export class RoutePanel {
   }
 
   togglePlay() {
-    if (this._playing) this.stopPlay();
-    else {
-      this._playing = true;
-      this.render();
-      this._timer = setInterval(() => {
-        if (!this._route) return this.stopPlay();
-        if (this._stopIdx + 1 >= this._route.stops.length) {
-          this.stopPlay();
-          return;
-        }
-        this.onSelectStop(this._stopIdx + 1);
-      }, 3200);
+    if (this._playing) {
+      this.stopPlay();
+      return;
     }
+    if (!this._route || !this._route.stops.length) return;
+    this._playing = true;
+    // Immediately advance (or restart from stop 0 if at the end) so clicking gives instant feedback
+    const nextIdx = this._stopIdx + 1 >= this._route.stops.length ? 0 : this._stopIdx + 1;
+    this.onSelectStop(nextIdx);
+    this._timer = setInterval(() => {
+      if (!this._route) return this.stopPlay();
+      if (this._stopIdx + 1 >= this._route.stops.length) {
+        this.stopPlay();
+        return;
+      }
+      this.onSelectStop(this._stopIdx + 1);
+    }, 2400);
   }
 
   stopPlay() {
