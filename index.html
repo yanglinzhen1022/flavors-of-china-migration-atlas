@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>食味中国 · 中华风物与饮食迁徙图谱（先秦两汉 — 今）</title>
+  <meta name="description" content="交互式中华风物与饮食迁徙图谱：涵盖58座风味名城的地方特产、地理标志、五味雷达与千年味觉沿革，以及辣椒入华、张骞胡食、苏轼美食贬谪、茶马古道、大运河风味带、南北面食流变等8大时空迁徙路线。" />
+  <meta name="theme-color" content="#f4efe4" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <div id="atlas-shell">
+    <header id="nav-bar">
+      <div class="brand-group">
+        <h1 id="site-heading">
+          <a class="home-link" href="./"><span class="seal-mark">食味中国</span></a>
+          <span class="subtitle-mark">中华风物与饮食迁徙图谱 · 先秦 → 今</span>
+        </h1>
+      </div>
+
+      <div class="flavor-filter-bar" role="group" aria-label="按风味快速筛选城市">
+        <span class="filter-label">风味筛选：</span>
+        <button type="button" class="filter-chip" data-flavor="辣">嗜辣</button>
+        <button type="button" class="filter-chip" data-flavor="鲜">极鲜</button>
+        <button type="button" class="filter-chip" data-flavor="酸">喜酸</button>
+        <button type="button" class="filter-chip" data-flavor="甜">清甜</button>
+        <button type="button" class="filter-chip" data-flavor="面">面食</button>
+        <button type="button" class="filter-chip" data-flavor="茶">名茶</button>
+        <button type="button" class="filter-chip" data-flavor="gi">地理标志</button>
+      </div>
+
+      <div class="control-strip">
+        <button id="act-mobile-drawer" class="action-btn subtle mobile-only-btn" type="button" title="展开历史时期与迁徙路线">时代·路线</button>
+        <button id="act-open-passport" class="action-btn subtle passport-btn" type="button" title="查看我的食味护照与已点亮城市">食味护照 <span id="lbl-passport-count" class="pp-badge">0/58</span></button>
+        <button id="act-start-quiz" class="action-btn accent" type="button" title="盲猜各地风物名城">风物盲猜</button>
+        <button id="act-layers-menu" class="action-btn subtle" type="button" title="地图图层开关">图层 ▾</button>
+        <a class="action-btn subtle hide-mobile" href="./topics/index.html" target="_blank" rel="noopener">专题目录</a>
+      </div>
+
+      <div id="layers-popover" class="layers-popover is-hidden" role="dialog" aria-label="地图图层开关">
+        <div class="layers-pop-heading">饮食风味与地理参照</div>
+        <div class="layers-pop-grid">
+          <label class="layer-chip"><input type="checkbox" id="chk-zones" checked /><span>风味版图</span></label>
+          <label class="layer-chip"><input type="checkbox" id="chk-ghost" checked /><span>变迁残影</span></label>
+          <label class="layer-chip"><input type="checkbox" id="chk-corridors" checked /><span>食脉与分界</span></label>
+          <label class="layer-chip"><input type="checkbox" id="chk-rivers" checked /><span>江河水系</span></label>
+          <label class="layer-chip"><input type="checkbox" id="chk-mountains" checked /><span>山脉脊梁</span></label>
+          <label class="layer-chip"><input type="checkbox" id="chk-provinces" checked /><span>现代省界</span></label>
+          <label class="layer-chip"><input type="checkbox" id="chk-prov-names" /><span>省名标注</span></label>
+        </div>
+      </div>
+    </header>
+
+    <main id="workspace-body">
+      <div id="viewport-frame">
+        <div id="svg-stage-wrap">
+          <svg id="atlas-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="中华风物与饮食迁徙交互地图">
+            <rect id="paper-bg" x="-2000" y="-2000" width="6000" height="6000" />
+            <g id="grp-graticule"></g>
+            <g id="grp-provinces"></g>
+            <g id="grp-mountains"></g>
+            <g id="grp-ghost"></g>
+            <g id="grp-zones"></g>
+            <g id="grp-rivers"></g>
+            <g id="grp-corridors"></g>
+            <g id="grp-prov-names" class="is-hidden"></g>
+            <g id="grp-zone-labels"></g>
+            <g id="grp-cities"></g>
+            <g id="grp-route"></g>
+            <g id="grp-quiz"></g>
+          </svg>
+        </div>
+
+        <div id="map-search-box" role="search">
+          <div class="search-input-wrap">
+            <span class="search-ico" aria-hidden="true">⌕</span>
+            <input id="inp-map-search" type="search" autocomplete="off" placeholder="搜城市 / 特产 / 名菜 / 迁徙路线（如：成都、螺蛳粉、辣椒）" />
+          </div>
+          <ul id="map-search-results" class="search-results-list is-hidden" role="listbox"></ul>
+        </div>
+
+        <div id="map-legend">
+          <span class="lg-item"><i class="lg-line lg-divide"></i>秦岭—淮河</span>
+          <span class="lg-item"><i class="lg-line lg-canal"></i>大运河食脉</span>
+          <span class="lg-item"><i class="lg-line lg-silk"></i>丝路胡食</span>
+          <span class="lg-item"><i class="lg-line lg-tea"></i>茶马古道</span>
+        </div>
+
+        <div id="canvas-br-dock">
+          <button id="act-reset-camera" class="canvas-reset-btn" type="button" title="复位全图视野">复位视图</button>
+          <div id="scale-bar-box" aria-hidden="true">
+            <div class="scale-label" id="scale-label-text">500 km</div>
+            <div class="scale-ruler"></div>
+          </div>
+        </div>
+
+        <button id="act-toggle-pane" type="button" title="收起或展开右侧风物志侧栏">‹›</button>
+
+        <aside id="city-card" class="is-hidden" role="dialog" aria-label="城市风物档案"></aside>
+        <section id="route-card" class="is-hidden" role="region" aria-label="饮食迁徙路线控制台"></section>
+        <section id="quiz-card" class="is-hidden" role="region" aria-label="风味盲猜挑战"></section>
+        <div id="passport-modal" class="is-hidden"></div>
+        <div id="hover-tip" class="is-hidden" role="tooltip"></div>
+
+        <div id="gesture-guide">滚轮缩放 · 拖拽平移 · 点击城市看“一城一味” · ← → 跳转节点 · 空格播放</div>
+      </div>
+
+      <aside id="chronicle-pane" aria-label="饮食史时期与迁徙路线">
+        <div class="mobile-drawer-head">
+          <span>饮食时期与迁徙路线</span>
+          <button type="button" class="icon-close" id="act-close-mobile-drawer" aria-label="关闭抽屉">✕</button>
+        </div>
+        <div id="era-quick-tabs" class="era-quick-tabs" aria-label="快速切换历史时期"></div>
+        <div class="dynasty-banner">
+          <div class="dynasty-title-row">
+            <h2 id="era-title">近现代百味</h2>
+            <span id="era-span" class="span-label">1912 — 2026</span>
+          </div>
+          <p id="era-summary" class="dynasty-desc"></p>
+          <div id="era-changes" class="era-changes"></div>
+        </div>
+
+        <div class="pane-section">
+          <h3 id="lbl-routes-heading">八大风物迁徙路线</h3>
+          <div id="quick-routes-list" class="quick-routes-list"></div>
+        </div>
+
+        <div class="pane-section">
+          <h3>中华饮食演进大事记</h3>
+          <ul id="milestone-list"></ul>
+        </div>
+
+        <div class="disclaimer-box">
+          风味分区为文化地理示意；地方特产与史料主要参照《齐民要术》《东京梦华录》《随园食单》及国家地理标志/非遗名录整理。
+        </div>
+      </aside>
+    </main>
+
+    <footer id="scrubber-dock" aria-label="饮食史时间轴">
+      <div class="playback-controls-group">
+        <button id="act-autoplay" class="round-btn" type="button" title="自动播放 / 暂停（空格）">▶</button>
+        <button id="act-play-speed" class="play-speed-btn" type="button" title="切换播放速度">1×</button>
+      </div>
+
+      <div id="scrubber-rail-wrap">
+        <div id="scrubber-bubble"><span id="bubble-text">公元2026年 · 近现代百味</span></div>
+        <div id="scrubber-track" role="slider" tabindex="0" aria-label="年份时间轴">
+          <div id="era-bands"></div>
+          <div id="scrubber-handle"></div>
+        </div>
+        <div id="scrubber-ticks"></div>
+      </div>
+
+      <div class="year-stepper">
+        <button id="act-step-prev" class="step-nav-btn" type="button" title="上一节点（←）">‹</button>
+        <input id="inp-year" type="number" min="-221" max="2026" value="2026" aria-label="输入年份" />
+        <span class="unit-label">年</span>
+        <button id="act-step-next" class="step-nav-btn" type="button" title="下一节点（→）">›</button>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

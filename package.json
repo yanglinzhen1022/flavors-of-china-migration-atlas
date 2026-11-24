@@ -1,0 +1,14 @@
+{
+  "name": "shiwei-atlas",
+  "version": "1.0.0",
+  "description": "食味中国 · 中华风物与饮食迁徙图谱 (Interactive Culinary & Local Specialties Migration Atlas of China)",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build_bundle.js",
+    "validate": "node scripts/validate_atlas.js",
+    "test": "node scripts/test_e2e.js",
+    "mcp": "node scripts/mcp_server.js",
+    "serve": "python3 -m http.server 8088"
+  }
+}

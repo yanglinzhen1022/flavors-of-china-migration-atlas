@@ -1,0 +1,25 @@
+# 食味中国 · 中华风物与饮食迁徙图谱 (Shiwei Culinary Atlas)
+
+> 交互式中华风物与饮食迁徙地图，覆盖先秦两汉至当代（前221—2026年）6大饮食时期、58座风味名城、174项地理标志/传统风物与8条核心食材/食客迁徙路线。
+
+## Deep-Link Protocol (零坐标直达链接)
+
+- 城市风物档案：`?city=<id|name>`（如 `?city=chengdu`、`?city=潮州`、`?city=huangshan`）
+- 双城味觉对比：`?city=chengdu&compare=shunde`
+- 点亮美食足迹：`?visited=chengdu,xian,shunde,huangshan`
+- 饮食迁徙路线：`?route=<id>&stop=<idx>`（`chili`, `zhangqian`, `sushi`, `tea_horse`, `canal`, `sweet_potato`, `noodles`, `maritime`）
+- 时代风味版图：`?year=<int>` 或 `?era=<preqin_han|weijin_nanbei|suitang|song_yuan|ming_qing|modern>`
+- 风味筛选：`?flavor=<辣|鲜|酸|甜|面|茶|gi>`
+- 盲猜挑战：`?quiz=flavor`
+- 网页嵌入模式：`?embed=1&city=chengdu`
+
+## Local MCP Server
+
+```bash
+node scripts/mcp_server.js
+```
+
+Exposes:
+- `inspect_city_flavor({ city })`
+- `inspect_food_route({ route })`
+- `search_culinary_atlas({ query, limit? })`
