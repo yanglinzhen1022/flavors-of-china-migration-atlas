@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/sitemap.xml

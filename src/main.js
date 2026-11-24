@@ -5,6 +5,8 @@ import { CameraController } from './map/camera.js';
 import { MapRenderer } from './map/renderer.js';
 import { CityCard } from './ui/city_card.js';
 import { RoutePanel } from './ui/route_panel.js';
+import { SeasonPanel } from './ui/season_panel.js';
+import { TripPlanner } from './ui/trip_planner.js';
 import { FlavorQuiz } from './ui/quiz.js';
 import { PassportPanel } from './ui/passport.js';
 import { TimelineController } from './ui/timeline.js';
@@ -16,6 +18,7 @@ class ShiweiAtlasApp {
   constructor() {
     this.cities = [];
     this.routes = [];
+    this.seasons = [];
     this.erasData = null;
     this.provinces = [];
     this.geoFeatures = null;
@@ -27,6 +30,8 @@ class ShiweiAtlasApp {
     this.compareCityId = null;
     this.activeRoute = null;
     this.activeRouteStop = -1;
+    this.activeSeasonId = null;
+    this.activeTripIds = null;
     this.flavorFilter = null;
     this.embed = false;
     this.visitedIds = this._loadVisited();
@@ -67,16 +72,19 @@ class ShiweiAtlasApp {
   }
 
   async init() {
-    const [citiesBundle, routes, erasData, provinces, geoFeatures] = await Promise.all([
+    const [citiesBundle, routes, seasons, erasData, provinces, geoFeatures] = await Promise.all([
       fetch('./data/cities_bundle.json').then((r) => r.json()),
       fetch('./data/routes.json').then((r) => r.json()),
+      fetch('./data/seasons.json').then((r) => r.json()),
       fetch('./data/eras.json').then((r) => r.json()),
       fetch('./data/geo/china_provinces.json').then((r) => r.json()),
       fetch('./data/geo/geo_features.json').then((r) => r.json()),
     ]);
 
     this.cities = citiesBundle.cities;
+    this.cityMap = new Map(this.cities.map((c) => [c.id, c]));
     this.routes = routes;
+    this.seasons = seasons;
     this.erasData = erasData;
     this.provinces = provinces;
     this.geoFeatures = geoFeatures;
@@ -156,6 +164,57 @@ class ShiweiAtlasApp {
       onClose: () => {
         this.activeRoute = null;
         this.activeRouteStop = -1;
+        this.renderer.renderRoute(null);
+        this._syncUrl();
+      },
+    });
+
+    this.seasonPanel = new SeasonPanel(document.getElementById('season-card'), {
+      onSelectCity: (cid) => {
+        const c = this.findCity(cid);
+        if (c) this.selectCity(c);
+      },
+      onSwitchSeason: (sid) => this.openSeason(sid),
+      onClose: () => {
+        this.activeSeasonId = null;
+        document.getElementById('act-open-season')?.classList.remove('is-active-tool');
+        this._redrawCities();
+        this._syncUrl();
+      },
+    });
+
+    this.tripPlanner = new TripPlanner(document.getElementById('trip-card'), this.projector, {
+      onChange: (tripCities) => {
+        this.activeTripIds = tripCities.map((c) => c.id);
+        if (tripCities.length >= 2) {
+          const fakeRoute = {
+            id: '__trip__',
+            color: '#b83b2b',
+            animateAll: true,
+            stops: tripCities.map((c) => ({
+              place: c.name,
+              cityId: c.id,
+              coord: c.coord,
+            })),
+          };
+          this.renderer.renderRoute(fakeRoute, -1, (idx) => {
+            const c = tripCities[idx];
+            if (c) this.selectCity(c);
+          });
+          const pts = tripCities.map((c) => this.projector.toScreen(c.coord[0], c.coord[1]));
+          this.camera.focusBounds(pts, 110, 0.65, 0.5);
+        } else {
+          this.renderer.renderRoute(null);
+        }
+        this._syncUrl();
+      },
+      onSelectCity: (cid) => {
+        const c = this.findCity(cid);
+        if (c) this.selectCity(c);
+      },
+      onClose: () => {
+        this.activeTripIds = null;
+        document.getElementById('act-open-trip')?.classList.remove('is-active-tool');
         this.renderer.renderRoute(null);
         this._syncUrl();
       },
@@ -300,6 +359,16 @@ class ShiweiAtlasApp {
   openRoute(routeId, stopIdx = 0) {
     document.getElementById('workspace-body')?.classList.remove('mobile-drawer-open');
     if (this.quiz.active) this.quiz.close();
+    if (this.tripPlanner.active) {
+      this.tripPlanner.close();
+      this.activeTripIds = null;
+      document.getElementById('act-open-trip')?.classList.remove('is-active-tool');
+    }
+    if (this.activeSeasonId) {
+      this.seasonPanel.close();
+      this.activeSeasonId = null;
+      document.getElementById('act-open-season')?.classList.remove('is-active-tool');
+    }
     const r = this.findRoute(routeId);
     if (!r) return;
     this.activeRoute = r;
@@ -312,6 +381,62 @@ class ShiweiAtlasApp {
     this.routePanel.open(r, stopIdx);
     this.selectRouteStop(stopIdx, false);
     this._renderChroniclePane(this.timeline.getEraForYear(this.timeline.year));
+  }
+
+  openSeason(seasonId = null) {
+    if (this.quiz.active) this.quiz.close();
+    if (this.activeRoute) {
+      this.routePanel.close();
+      this.activeRoute = null;
+      this.renderer.renderRoute(null);
+    }
+    if (this.tripPlanner.active) {
+      this.tripPlanner.close();
+      this.activeTripIds = null;
+      this.renderer.renderRoute(null);
+      document.getElementById('act-open-trip')?.classList.remove('is-active-tool');
+    }
+
+    // Default to current calendar season if none provided
+    let targetId = seasonId;
+    if (!targetId) {
+      const m = new Date().getMonth() + 1;
+      targetId = m >= 2 && m <= 4 ? 'spring' : m >= 5 && m <= 8 ? 'summer' : m >= 9 && m <= 11 ? 'autumn' : 'winter';
+    }
+    const season = this.seasons.find((s) => s.id === targetId) || this.seasons[0];
+    this.activeSeasonId = season.id;
+    document.getElementById('act-open-season')?.classList.add('is-active-tool');
+    this.seasonPanel.open(season, this.seasons, this.cityMap);
+    this._redrawCities();
+    this.camera.reset(true);
+    this._syncUrl();
+  }
+
+  openTripPlanner(initialIds = null) {
+    if (this.quiz.active) this.quiz.close();
+    if (this.activeRoute) {
+      this.routePanel.close();
+      this.activeRoute = null;
+    }
+    if (this.activeSeasonId) {
+      this.seasonPanel.close();
+      this.activeSeasonId = null;
+      document.getElementById('act-open-season')?.classList.remove('is-active-tool');
+    }
+    this.cityCard.close();
+    this.activeCityId = null;
+    document.getElementById('act-open-trip')?.classList.add('is-active-tool');
+    this.tripPlanner.open(this.cities, initialIds);
+    this._redrawCities();
+  }
+
+  openRandomCity() {
+    if (!this.cities.length) return;
+    if (this.quiz.active) this.quiz.close();
+    const unvisited = this.cities.filter((c) => c.id !== this.activeCityId && !this.visitedIds.includes(c.id));
+    const pool = unvisited.length ? unvisited : this.cities.filter((c) => c.id !== this.activeCityId);
+    const pick = pool[Math.floor(Math.random() * pool.length)] || this.cities[0];
+    this.selectCity(pick);
   }
 
   selectRouteStop(idx, pan = true) {
@@ -354,10 +479,18 @@ class ShiweiAtlasApp {
   }
 
   _redrawCities() {
+    let seasonalMap = null;
+    if (this.activeSeasonId) {
+      const season = this.seasons.find((s) => s.id === this.activeSeasonId);
+      if (season) {
+        seasonalMap = new Map(season.picks.map((p) => [p.cityId, { item: p.item, color: season.color }]));
+      }
+    }
     this.renderer.renderCities(this.cities, {
       activeCityId: this.activeCityId,
       flavorFilter: this.flavorFilter,
       visitedIds: this.visitedIds,
+      seasonalMap,
     });
   }
 
@@ -487,6 +620,35 @@ class ShiweiAtlasApp {
     // Quiz button
     document.getElementById('act-start-quiz').addEventListener('click', () => this.startQuiz());
 
+    // Season button
+    document.getElementById('act-open-season')?.addEventListener('click', () => {
+      if (this.activeSeasonId) {
+        this.seasonPanel.close();
+        this.activeSeasonId = null;
+        document.getElementById('act-open-season')?.classList.remove('is-active-tool');
+        this._redrawCities();
+        this._syncUrl();
+      } else {
+        this.openSeason();
+      }
+    });
+
+    // Trip planner button
+    document.getElementById('act-open-trip')?.addEventListener('click', () => {
+      if (this.tripPlanner.active) {
+        this.tripPlanner.close();
+        this.activeTripIds = null;
+        document.getElementById('act-open-trip')?.classList.remove('is-active-tool');
+        this.renderer.renderRoute(null);
+        this._syncUrl();
+      } else {
+        this.openTripPlanner();
+      }
+    });
+
+    // Random city button
+    document.getElementById('act-random-city')?.addEventListener('click', () => this.openRandomCity());
+
     // Passport button
     document.getElementById('act-open-passport').addEventListener('click', () => {
       this.passport.open(this.cities, this.visitedIds);
@@ -541,8 +703,20 @@ class ShiweiAtlasApp {
         this.cityCard.close();
         this.activeCityId = null;
         this.compareCityId = null;
+        if (this.activeSeasonId) {
+          this.seasonPanel.close();
+          this.activeSeasonId = null;
+          document.getElementById('act-open-season')?.classList.remove('is-active-tool');
+        }
+        if (this.tripPlanner.active) {
+          this.tripPlanner.close();
+          this.activeTripIds = null;
+          this.renderer.renderRoute(null);
+          document.getElementById('act-open-trip')?.classList.remove('is-active-tool');
+        }
         this._redrawCities();
         if (this.quiz.active) this.quiz.close();
+        this._syncUrl();
       }
     });
   }
@@ -574,17 +748,23 @@ class ShiweiAtlasApp {
 
     if (st.quiz === 'flavor') {
       this.startQuiz();
+    } else if (st.trip && st.trip.length >= 2) {
+      const resolved = st.trip.map((tok) => this.findCity(tok)?.id).filter(Boolean);
+      if (resolved.length >= 2) this.openTripPlanner(resolved);
     } else if (st.route) {
       this.openRoute(st.route, st.stop ?? 0);
-    } else if (st.city) {
-      const c = this.findCity(st.city);
-      if (c) {
-        this.selectCity(c);
-        if (st.compare) {
-          const cmp = this.findCity(st.compare);
-          if (cmp && cmp.id !== c.id) {
-            this.compareCityId = cmp.id;
-            this._openCityCard(c);
+    } else {
+      if (st.season) this.openSeason(st.season);
+      if (st.city) {
+        const c = this.findCity(st.city);
+        if (c) {
+          this.selectCity(c);
+          if (st.compare) {
+            const cmp = this.findCity(st.compare);
+            if (cmp && cmp.id !== c.id) {
+              this.compareCityId = cmp.id;
+              this._openCityCard(c);
+            }
           }
         }
       }
@@ -597,6 +777,8 @@ class ShiweiAtlasApp {
       year: this.timeline?.year,
       city: this.activeCityId,
       compare: this.compareCityId,
+      season: this.activeSeasonId,
+      trip: this.activeTripIds,
       route: this.activeRoute?.id || null,
       stop: this.activeRoute ? this.activeRouteStop : null,
       flavor: this.flavorFilter,

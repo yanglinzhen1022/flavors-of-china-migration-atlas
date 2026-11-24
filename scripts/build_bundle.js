@@ -162,6 +162,20 @@ function buildTopics(cities, routes) {
     `,
   });
   fs.writeFileSync(path.join(TOPICS_DIR, 'index.html'), indexHtml, 'utf8');
+
+  // Generate sitemap.xml & robots.txt
+  const baseUrl = (process.env.SITE_BASE_URL || 'https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas').replace(/\/+$/, '');
+  const urls = [
+    `${baseUrl}/`,
+    `${baseUrl}/topics/index.html`,
+    ...routes.map((r) => `${baseUrl}/topics/route-${r.id}.html`),
+    ...cities.map((c) => `${baseUrl}/topics/city-${c.id}.html`),
+  ];
+  const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls
+    .map((u) => `  <url><loc>${esc(u)}</loc></url>`)
+    .join('\n')}\n</urlset>\n`;
+  fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), sitemapXml, 'utf8');
+  fs.writeFileSync(path.join(ROOT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${baseUrl}/sitemap.xml\n`, 'utf8');
 }
 
 export function buildAll() {

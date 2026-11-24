@@ -17,6 +17,7 @@ function run() {
   const cities = loadCities();
   const erasData = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'eras.json'), 'utf8'));
   const routes = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'routes.json'), 'utf8'));
+  const seasons = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'seasons.json'), 'utf8'));
   const provinces = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'geo', 'china_provinces.json'), 'utf8'));
   const geoFeatures = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'geo', 'geo_features.json'), 'utf8'));
 
@@ -67,6 +68,14 @@ function run() {
     for (const s of r.stops) {
       assert(cityMap.has(s.cityId), `Route ${r.id} stop "${s.place}" references unknown cityId ${s.cityId}`);
       assert(Array.isArray(s.coord) && s.coord.length === 2, `Route ${r.id} stop "${s.place}" invalid coord`);
+    }
+  }
+
+  assert(Array.isArray(seasons) && seasons.length === 4, 'Expected 4 seasons in data/seasons.json');
+  for (const s of seasons) {
+    assert(s.id && s.name && Array.isArray(s.picks) && s.picks.length >= 6, `Invalid season ${s.id}`);
+    for (const p of s.picks) {
+      assert(cityMap.has(p.cityId), `Season ${s.id} references unknown cityId ${p.cityId}`);
     }
   }
 

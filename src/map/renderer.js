@@ -200,10 +200,12 @@ export class MapRenderer {
     this.layoutLabels();
   }
 
-  renderCities(cities, { activeCityId = null, flavorFilter = null, visitedIds = [] } = {}) {
+  renderCities(cities, { activeCityId = null, flavorFilter = null, visitedIds = [], seasonalMap = null } = {}) {
     this.grpCities.innerHTML = '';
     this._cityNodes = [];
     const visitedSet = new Set(visitedIds);
+    const hasSeason = Boolean(seasonalMap && seasonalMap.size > 0);
+    this.svg.classList.toggle('has-season-filter', hasSeason);
 
     // Tier 1 major hubs stay visible at zoom=1; others fade in at higher zoom or when highlighted
     const MAJOR_HUBS = new Set([
@@ -217,13 +219,16 @@ export class MapRenderer {
       const [x, y] = this.proj.toScreen(c.coord[0], c.coord[1]);
       const isSelected = c.id === activeCityId;
       const isVisited = visitedSet.has(c.id);
-      const matchesFilter = !flavorFilter || this._cityMatchesFilter(c, flavorFilter);
+      const seasonPick = hasSeason ? seasonalMap.get(c.id) || null : null;
+      const matchesFilter = hasSeason
+        ? Boolean(seasonPick)
+        : !flavorFilter || this._cityMatchesFilter(c, flavorFilter);
       const isMajor = MAJOR_HUBS.has(c.id);
 
       const g = el(
         'g',
         {
-          class: `city-marker ${isSelected ? 'is-selected' : ''} ${isVisited ? 'is-visited' : ''} ${matchesFilter ? 'is-matched' : 'is-dimmed'}`,
+          class: `city-marker ${isSelected ? 'is-selected' : ''} ${isVisited ? 'is-visited' : ''} ${seasonPick ? 'is-seasonal' : ''} ${matchesFilter ? 'is-matched' : 'is-dimmed'}`,
           transform: `translate(${x.toFixed(1)}, ${y.toFixed(1)})`,
           'data-city': c.id,
         },
@@ -235,10 +240,12 @@ export class MapRenderer {
       if (isSelected) {
         el('circle', { r: 9.5, class: 'city-pulse-ring' }, g);
       }
-      if (isVisited) {
+      if (seasonPick) {
+        el('circle', { r: isSelected ? 8.2 : 6.8, stroke: seasonPick.color, class: 'city-season-ring' }, g);
+      } else if (isVisited) {
         el('circle', { r: isSelected ? 7.2 : 6.0, class: 'city-visited-ring' }, g);
       }
-      el('circle', { r: isSelected ? 5.2 : isMajor ? 4.0 : 3.2, fill: c.color || '#b83b2b', class: 'city-dot' }, g);
+      el('circle', { r: isSelected ? 5.2 : seasonPick ? 4.4 : isMajor ? 4.0 : 3.2, fill: seasonPick ? seasonPick.color : c.color || '#b83b2b', class: 'city-dot' }, g);
 
       const lbl = el('text', { x: 7, y: 3.5, class: 'city-label' }, g);
       lbl.textContent = c.name;
@@ -249,16 +256,19 @@ export class MapRenderer {
       });
       g.addEventListener('pointerenter', (e) => {
         if (this._quizHideLabels) return;
+        const sub = seasonPick
+          ? `当季必尝：${seasonPick.item}`
+          : `${c.specialties[0]?.name || ''} · ${c.dishes.slice(0, 3).join(' / ')}`;
         this.onHoverTip({
           title: `${c.name} · ${c.cuisineFamily}`,
-          sub: `${c.specialties[0]?.name || ''} · ${c.dishes.slice(0, 3).join(' / ')}`,
+          sub,
           x: e.clientX,
           y: e.clientY,
         });
       });
       g.addEventListener('pointerleave', () => this.onHoverTip(null));
 
-      this._cityNodes.push({ g, lbl, c, x, y, isMajor, isSelected, matchesFilter });
+      this._cityNodes.push({ g, lbl, c, x, y, isMajor, isSelected, matchesFilter, isSeasonal: Boolean(seasonPick) });
     }
 
     this.updateScale(this._currentZoom);
@@ -292,7 +302,7 @@ export class MapRenderer {
     }
     const pts = stops.map((s) => this.proj.toScreen(s.coord[0], s.coord[1]));
 
-    // Draw curved quadratic arcs between consecutive stops
+    // Draw curved quadratic arcs between consecutive stops with growth animation
     for (let i = 0; i < pts.length - 1; i++) {
       const [x1, y1] = pts[i];
       const [x2, y2] = pts[i + 1];
@@ -306,15 +316,45 @@ export class MapRenderer {
       const cy = my + (dx / dist) * lift;
       const d = `M${x1.toFixed(1)},${y1.toFixed(1)} Q${cx.toFixed(1)},${cy.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}`;
       const isCurrentSeg = activeStopIdx > 0 && i === activeStopIdx - 1;
+      const isPassedSeg = activeStopIdx > 0 && i < activeStopIdx - 1;
+      const shouldGrow = isCurrentSeg || Boolean(route.animateAll);
+
+      // Subtle dashed base track
       el(
         'path',
         {
           d,
-          class: `route-arc ${isCurrentSeg ? 'is-active-seg' : ''}`,
+          class: `route-arc ${isPassedSeg ? 'is-passed-seg' : ''}`,
           stroke: route.color || '#b83b2b',
         },
         this.grpRoute
       );
+
+      if (shouldGrow) {
+        const animPath = el(
+          'path',
+          {
+            d,
+            pathLength: 100,
+            class: 'route-arc is-active-seg route-arc-grow',
+            stroke: route.color || '#b83b2b',
+          },
+          this.grpRoute
+        );
+        if (route.animateAll) {
+          animPath.style.animationDelay = `${i * 180}ms`;
+        }
+        // Moving glowing bead along the active segment
+        if (isCurrentSeg) {
+          const bead = el('circle', { r: 4.5, fill: route.color || '#b83b2b', stroke: '#fff', 'stroke-width': 1.5, class: 'route-traveler' }, this.grpRoute);
+          const motion = el('animateMotion', { dur: '0.85s', repeatCount: '1', fill: 'freeze', path: d }, bead);
+          if (typeof motion.beginElement === 'function') {
+            setTimeout(() => {
+              try { motion.beginElement(); } catch {}
+            }, 0);
+          }
+        }
+      }
     }
 
     // Draw numbered stop pins
@@ -336,8 +376,8 @@ export class MapRenderer {
       const num = el('text', { y: 3.2, class: `route-stop-num ${isActive ? 'is-active' : ''}` }, g);
       num.textContent = String(idx + 1);
 
-      const yrStr = s.year < 0 ? `前${-s.year}` : `${s.year}`;
-      const labelText = `${s.place.split('（')[0]} (${yrStr})`;
+      const yrStr = s.year !== undefined && s.year !== null ? (s.year < 0 ? `前${-s.year}` : `${s.year}`) : '';
+      const labelText = yrStr ? `${s.place.split('（')[0]} (${yrStr})` : s.place.split('（')[0];
       const lbl = el('text', { x: 11, y: 3.5, class: 'route-stop-label' }, g);
       lbl.textContent = labelText;
       this._routeStopNodes.push({ lbl, x, y, text: labelText, isActive });
@@ -477,10 +517,10 @@ export class MapRenderer {
     }
 
     // Priority 2: City labels (multi-anchor placement prevents coastal/delta clusters from overlapping)
-    const hasFilter = this.svg.classList.contains('has-flavor-filter');
+    const hasFilter = this.svg.classList.contains('has-flavor-filter') || this.svg.classList.contains('has-season-filter');
     const orderedCities = [...this._cityNodes].sort((a, b) => {
-      const pa = (a.isSelected ? 8 : 0) + (a.isMajor ? 4 : 0) + (a.matchesFilter ? 2 : 0);
-      const pb = (b.isSelected ? 8 : 0) + (b.isMajor ? 4 : 0) + (b.matchesFilter ? 2 : 0);
+      const pa = (a.isSelected ? 10 : 0) + (a.isSeasonal ? 6 : 0) + (a.isMajor ? 4 : 0) + (a.matchesFilter ? 2 : 0);
+      const pb = (b.isSelected ? 10 : 0) + (b.isSeasonal ? 6 : 0) + (b.isMajor ? 4 : 0) + (b.matchesFilter ? 2 : 0);
       return pb - pa;
     });
 

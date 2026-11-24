@@ -46,10 +46,12 @@ function testSearchAndDeepLinks() {
   const hits3 = searchAtlas(idx, '甘谷辣椒');
   assert(hits3.length > 0 && hits3[0].id === 'tianshui', 'Searching 甘谷辣椒 should return 天水');
 
-  const st = parseUrlState('?city=chengdu&compare=shunde&visited=chengdu,xian&flavor=辣&embed=1');
+  const st = parseUrlState('?city=chengdu&compare=shunde&visited=chengdu,xian&season=autumn&trip=chengdu,leshan,chongqing&flavor=辣&embed=1');
   assert.equal(st.city, 'chengdu');
   assert.equal(st.compare, 'shunde');
   assert.deepEqual(st.visited, ['chengdu', 'xian']);
+  assert.equal(st.season, 'autumn');
+  assert.deepEqual(st.trip, ['chengdu', 'leshan', 'chongqing']);
   assert.equal(st.flavor, '辣');
   assert.equal(st.embed, true);
 }

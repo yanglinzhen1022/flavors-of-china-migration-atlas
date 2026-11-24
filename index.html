@@ -4,7 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>食味中国 · 中华风物与饮食迁徙图谱（先秦两汉 — 今）</title>
-  <meta name="description" content="交互式中华风物与饮食迁徙图谱：涵盖58座风味名城的地方特产、地理标志、五味雷达与千年味觉沿革，以及辣椒入华、张骞胡食、苏轼美食贬谪、茶马古道、大运河风味带、南北面食流变等8大时空迁徙路线。" />
+  <meta name="description" content="交互式中华风物与饮食迁徙图谱：涵盖58座风味名城的地方特产、地理标志、五味雷达与千年味觉沿革，以及辣椒入华、张骞胡食、苏轼美食贬谪、茶马古道、大运河风味带、南北面食流变等8大时空迁徙路线与四季时令风物。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="食味中国 · 中华风物与饮食迁徙图谱（先秦两汉 — 今）" />
+  <meta property="og:description" content="58座风味名城一城一味档案、双城味觉PK、8大饮食迁徙路线、四季时令寻味指南与个人食味护照。" />
+  <meta property="og:image" content="https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/assets/preview_home.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="食味中国 · 中华风物与饮食迁徙图谱" />
+  <meta name="twitter:description" content="交互式中华风物与饮食迁徙图谱：58座名城、8大迁徙路线、四季时令与双城味觉PK。" />
+  <meta name="twitter:image" content="https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/assets/preview_home.png" />
   <meta name="theme-color" content="#f4efe4" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -34,6 +42,8 @@
 
       <div class="control-strip">
         <button id="act-mobile-drawer" class="action-btn subtle mobile-only-btn" type="button" title="展开历史时期与迁徙路线">时代·路线</button>
+        <button id="act-open-season" class="action-btn subtle" type="button" title="查看春夏秋冬四季时令风物">四季时令</button>
+        <button id="act-open-trip" class="action-btn subtle" type="button" title="自定义多城吃货旅行路线">吃货行程</button>
         <button id="act-open-passport" class="action-btn subtle passport-btn" type="button" title="查看我的食味护照与已点亮城市">食味护照 <span id="lbl-passport-count" class="pp-badge">0/58</span></button>
         <button id="act-start-quiz" class="action-btn accent" type="button" title="盲猜各地风物名城">风物盲猜</button>
         <button id="act-layers-menu" class="action-btn subtle" type="button" title="地图图层开关">图层 ▾</button>
@@ -75,9 +85,12 @@
         </div>
 
         <div id="map-search-box" role="search">
-          <div class="search-input-wrap">
-            <span class="search-ico" aria-hidden="true">⌕</span>
-            <input id="inp-map-search" type="search" autocomplete="off" placeholder="搜城市 / 特产 / 名菜 / 迁徙路线（如：成都、螺蛳粉、辣椒）" />
+          <div class="search-row">
+            <div class="search-input-wrap">
+              <span class="search-ico" aria-hidden="true">⌕</span>
+              <input id="inp-map-search" type="search" autocomplete="off" placeholder="搜城市 / 特产 / 名菜 / 迁徙路线（如：成都、螺蛳粉、辣椒）" />
+            </div>
+            <button id="act-random-city" class="random-city-btn" type="button" title="随机飞往一座风味名城">随机寻味</button>
           </div>
           <ul id="map-search-results" class="search-results-list is-hidden" role="listbox"></ul>
         </div>
@@ -101,6 +114,8 @@
 
         <aside id="city-card" class="is-hidden" role="dialog" aria-label="城市风物档案"></aside>
         <section id="route-card" class="is-hidden" role="region" aria-label="饮食迁徙路线控制台"></section>
+        <section id="season-card" class="is-hidden" role="region" aria-label="四季时令风物指南"></section>
+        <section id="trip-card" class="is-hidden" role="region" aria-label="自定义吃货行程规划"></section>
         <section id="quiz-card" class="is-hidden" role="region" aria-label="风味盲猜挑战"></section>
         <div id="passport-modal" class="is-hidden"></div>
         <div id="hover-tip" class="is-hidden" role="tooltip"></div>

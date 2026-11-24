@@ -14,6 +14,8 @@ export function parseUrlState(searchStr = typeof location !== 'undefined' ? loca
     city: params.get('city') || null,
     compare: params.get('compare') || null,
     visited: params.get('visited') ? params.get('visited').split(',').filter(Boolean) : null,
+    season: params.get('season') || null,
+    trip: params.get('trip') ? params.get('trip').split(',').filter(Boolean) : null,
     route: params.get('route') || null,
     stop,
     flavor: params.get('flavor') || null,
@@ -27,7 +29,9 @@ export function syncUrlState(state) {
   if (typeof history === 'undefined' || typeof location === 'undefined') return;
   const params = new URLSearchParams();
   if (state.embed) params.set('embed', '1');
-  if (state.route) {
+  if (state.trip && state.trip.length >= 2) {
+    params.set('trip', state.trip.join(','));
+  } else if (state.route) {
     params.set('route', state.route);
     if (typeof state.stop === 'number' && state.stop >= 0) params.set('stop', String(state.stop));
   } else {
@@ -37,6 +41,7 @@ export function syncUrlState(state) {
       if (state.compare) params.set('compare', state.compare);
     }
   }
+  if (state.season) params.set('season', state.season);
   if (state.flavor) params.set('flavor', state.flavor);
   if (state.quiz) params.set('quiz', state.quiz);
 

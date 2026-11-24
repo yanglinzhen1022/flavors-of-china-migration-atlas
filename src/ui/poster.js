@@ -327,3 +327,62 @@ export function exportPassportPoster(cities, visitedIds, avgScores, tasteTitle, 
 
   downloadCanvas(canvas, `shiwei-passport-${litCities.length}.png`);
 }
+
+export function exportTripPoster(tripCities, totalKm) {
+  if (!tripCities || tripCities.length < 2) return;
+  const { canvas, ctx } = createParchmentCanvas(840, 1120);
+  const W = 840;
+
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  ctx.fillStyle = '#b83b2b';
+  ctx.font = '600 18px "Noto Sans SC", sans-serif';
+  ctx.fillText(`自定义寻味攻略 · ${tripCities.length} 城 · 全程约 ${totalKm.toLocaleString()} km`, 62, 126);
+
+  ctx.fillStyle = '#1f2226';
+  ctx.font = '700 34px "Noto Serif SC", serif';
+  const titleStr = tripCities.map((c) => c.name.split('·')[0].trim()).join(' → ');
+  wrapText(ctx, titleStr, 62, 162, W - 124, 44, 2);
+
+  let curY = 266;
+  tripCities.forEach((c, idx) => {
+    ctx.fillStyle = '#f5efe2';
+    ctx.fillRect(62, curY, W - 124, 112);
+    ctx.strokeStyle = '#dfd3bd';
+    ctx.strokeRect(62, curY, W - 124, 112);
+
+    ctx.fillStyle = c.color || '#b83b2b';
+    ctx.beginPath();
+    ctx.arc(92, curY + 34, 15, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = '700 16px "Noto Sans SC", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(String(idx + 1), 92, curY + 34);
+
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = '#1f2226';
+    ctx.font = '700 21px "Noto Serif SC", serif';
+    ctx.fillText(`${c.name}（${c.province} · ${c.cuisineFamily}）`, 120, curY + 18);
+
+    ctx.fillStyle = '#2f6b64';
+    ctx.font = '600 15.5px "Noto Sans SC", sans-serif';
+    ctx.fillText(`必尝：${c.dishes.slice(0, 4).join(' · ')}`, 120, curY + 50);
+
+    ctx.fillStyle = '#5a4e3d';
+    ctx.font = '400 14px "Noto Sans SC", sans-serif';
+    wrapText(ctx, `风物：${c.specialties.map((s) => s.name).join('、')}`, 120, curY + 78, W - 196, 20, 1);
+
+    curY += 126;
+  });
+
+  ctx.fillStyle = '#7c705c';
+  ctx.font = '400 14px "Noto Sans SC", sans-serif';
+  ctx.fillText(`食味中国 · 吃货行程 (?trip=${tripCities.map((c) => c.id).join(',')})`, 62, 1055);
+  ctx.textAlign = 'right';
+  ctx.fillText('先秦两汉 — 当代中华饮食地理图谱', W - 62, 1055);
+
+  downloadCanvas(canvas, `shiwei-trip-${tripCities.map((c) => c.id).join('-')}.png`);
+}
