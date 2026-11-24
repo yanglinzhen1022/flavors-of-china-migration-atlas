@@ -1,6 +1,10 @@
 # 食味中国 · 中华风物与饮食迁徙图谱
 
 <p align="left">
+  <strong>简体中文</strong> · <a href="README_EN.md">English</a>
+</p>
+
+<p align="left">
   <img alt="Zero Dependencies" src="https://img.shields.io/badge/Dependencies-0%20Runtime-2f6b64?style=flat-square" />
   <img alt="58 Cities" src="https://img.shields.io/badge/风味名城-58%20城-b83b2b?style=flat-square" />
   <img alt="8 Routes" src="https://img.shields.io/badge/迁徙路线-8%20条-c78d3b?style=flat-square" />
@@ -9,6 +13,8 @@
 </p>
 
 **一幅可以拉动时间轴、点开每座城读「味觉千年史」、追踪辣椒/胡食/苏轼/茶马古道迁徙足迹的交互式中华风物与饮食舆图（先秦两汉 — 今）。**
+
+👉 **在线演示：[https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/)**
 
 - 纯静态原生 ES Modules + SVG 渲染，**零运行时依赖、无需构建打包**，开箱即跑，支持一键部署至 **GitHub Pages**。
 - 收录 **58 座风味名城**、**174 项地理标志与传统风物**、**174 条历史沿革**、**6 大饮食时期**与 **8 条时空迁徙路线**。
@@ -74,16 +80,16 @@
 | **`Esc`** | 关闭当前弹窗卡片、护照或退出挑战模式 |
 
 ### 零坐标分享链接（URL 参数）
-* **打开某座城市档案**：`?city=chengdu` 或 `?city=潮州` 或 `?city=huangshan`
-* **双城味觉 PK**：`?city=tianshui&compare=chengdu`
-* **打开迁徙路线**：`?route=chili`、`?route=noodles&stop=3`、`?route=sushi`
-* **按风味一键筛选**：`?flavor=辣`、`?flavor=鲜`、`?flavor=茶`、`?flavor=gi`
-* **分享已点亮美食足迹**：`?visited=chengdu,xian,shunde,huangshan`
-* **直接开启盲猜挑战**：`?quiz=flavor`
+* **打开某座城市档案**：[`?city=chengdu`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?city=chengdu) / [`?city=潮州`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?city=%E6%BD%AE%E5%B7%9E) / [`?city=huangshan`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?city=huangshan)
+* **双城味觉 PK**：[`?city=tianshui&compare=chengdu`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?city=tianshui&compare=chengdu) / [`?city=chengdu&compare=shunde`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?city=chengdu&compare=shunde)
+* **打开迁徙路线**：[`?route=chili`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?route=chili) / [`?route=noodles`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?route=noodles) / [`?route=sushi`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?route=sushi)
+* **按风味一键筛选**：[`?flavor=辣`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?flavor=%E8%BE%A3) / [`?flavor=鲜`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?flavor=%E9%B2%9C) / [`?flavor=茶`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?flavor=%E8%8C%B6) / [`?flavor=gi`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?flavor=gi)
+* **分享已点亮美食足迹**：[`?visited=chengdu,xian,shunde,huangshan`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?visited=chengdu,xian,shunde,huangshan)
+* **直接开启盲猜挑战**：[`?quiz=flavor`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?quiz=flavor)
 * **网页嵌入模式（Iframe）**：
   ```html
   <iframe
-    src="https://<你的用户名>.github.io/shiwei-atlas/?embed=1&route=chili"
+    src="https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?embed=1&route=chili"
     width="100%" height="520" loading="lazy" style="border:0"
     title="食味中国 · 辣味中国迁徙路线"></iframe>
   ```
@@ -114,8 +120,8 @@
 
 ### 1. 本地运行（零依赖）
 ```bash
-git clone https://github.com/<你的用户名>/shiwei-atlas.git
-cd shiwei-atlas
+git clone https://github.com/yanglinzhen1022/flavors-of-china-migration-atlas.git
+cd flavors-of-china-migration-atlas
 npm run serve
 # 或 python3 -m http.server 8088
 ```
@@ -125,7 +131,7 @@ npm run serve
 仓库已内置 [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml)：
 1. 将代码推送至 GitHub 仓库的 `main` 分支；
 2. 进入仓库 **Settings → Pages → Build and deployment**，将 **Source** 设为 **GitHub Actions**；
-3. 每次推送会自动执行构建、数据校验、集成测试并发布至 `https://<你的用户名>.github.io/<仓库名>/`。
+3. 每次推送会自动执行构建、数据校验、集成测试并发布至 `https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/`。
 
 ### 3. Docker 部署
 ```bash
