@@ -8,6 +8,8 @@
 - 双城味觉对比：`?city=chengdu&compare=shunde`
 - 点亮美食足迹：`?visited=chengdu,xian,shunde,huangshan`
 - 饮食迁徙路线：`?route=<id>&stop=<idx>`（`chili`, `zhangqian`, `sushi`, `tea_horse`, `canal`, `sweet_potato`, `noodles`, `maritime`）
+- 四季时令风物：`?season=<spring|summer|autumn|winter>`
+- 自定义吃货行程：`?trip=chengdu,leshan,zigong,chongqing`
 - 时代风味版图：`?year=<int>` 或 `?era=<preqin_han|weijin_nanbei|suitang|song_yuan|ming_qing|modern>`
 - 风味筛选：`?flavor=<辣|鲜|酸|甜|面|茶|gi>`
 - 盲猜挑战：`?quiz=flavor`

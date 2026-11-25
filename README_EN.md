@@ -63,7 +63,18 @@ Follow animated curved arcs and numbered historical stops across China (with aut
 
 ---
 
-### 4. Personal "Culinary Passport" & Blind-Map Quiz
+### 4. Four Seasons Specialties & Custom Foodie Trip Planner
+* **Seasonal Specialties (`四季时令`)**: Toggle between **Spring, Summer, Autumn, and Winter** to highlight peak-season cities and specialties (e.g., Spring West Lake Longjing tea, Summer Yunnan wild mushrooms, Autumn Yangcheng Lake hairy crabs, Winter Chongqing hotpot & Ningxia lamb);
+* **Custom Foodie Trip Planner (`吃货行程`)**: Choose from 4 curated weekend foodie itineraries or build your own 2–6 city route with animated growing flight arcs, total distance calculation, shareable `?trip=...` URLs, and **one-click PNG itinerary poster export**;
+* **Random City Discovery (`随机寻味`)**: Jump smoothly to a random unvisited culinary city with one click.
+
+![Seasonal Specialties View](assets/preview_season.png)
+
+![Custom Foodie Trip Planner](assets/preview_trip.png)
+
+---
+
+### 5. Personal "Culinary Passport" & Blind-Map Quiz
 * **Culinary Passport (`食味护照`)**: Stamp cities you've visited (saved in `localStorage`), track completion across China's 7 regions, view your dynamically computed personal 5-axis taste profile, share via URL (`?visited=...`), or export a PNG passport poster;
 * **Flavor Blind-Guess Quiz (`风味盲猜`)**: Hides all city labels and gives 3 progressive terroir/historical clues; drop a pin on the blank map to score by great-circle distance and earn a traditional culinary rank.
 
@@ -82,7 +93,9 @@ Follow animated curved arcs and numbered historical stops across China (with aut
 ### Zero-Coordinate Deep Links
 * **City Profile**: [`?city=chengdu`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?city=chengdu) / [`?city=huangshan`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?city=huangshan) / [`?city=shunde`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?city=shunde)
 * **Dual-City Taste PK**: [`?city=tianshui&compare=chengdu`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?city=tianshui&compare=chengdu)
-* **Migration Route**: [`?route=chili`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?route=chili) / [`?route=noodles`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?route=noodles) / [`?route=sushi`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?route=sushi)
+* **Migration Route (with growing arc animation)**: [`?route=chili`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?route=chili) / [`?route=noodles`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?route=noodles) / [`?route=sushi`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?route=sushi)
+* **Seasonal Specialties**: [`?season=spring`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?season=spring) / [`?season=summer`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?season=summer) / [`?season=autumn`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?season=autumn) / [`?season=winter`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?season=winter)
+* **Custom Foodie Trip**: [`?trip=chengdu,leshan,zigong,chongqing`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?trip=chengdu,leshan,zigong,chongqing) / [`?trip=yangzhou,nanjing,suzhou,hangzhou`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?trip=yangzhou,nanjing,suzhou,hangzhou)
 * **Flavor Filter**: [`?flavor=辣`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?flavor=%E8%BE%A3) / [`?flavor=gi`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?flavor=gi)
 * **Shared Passport Footprint**: [`?visited=chengdu,xian,shunde,huangshan`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?visited=chengdu,xian,shunde,huangshan)
 * **Blind-Guess Quiz**: [`?quiz=flavor`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?quiz=flavor)

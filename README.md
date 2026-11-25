@@ -63,7 +63,18 @@
 
 ---
 
-### 4. 「食味护照」与「风味盲猜」互动挑战
+### 4. 「四季时令风物」与「自定义吃货行程」
+* **四季时令风物（不时不食）**：一键切换 **春（鲜芽春茗）/ 夏（菌鲜冰果）/ 秋（蟹肥新米）/ 冬（围炉醇汤）**，地图自动高亮当季代表城市（如春采西湖龙井、夏寻云南野生菌、秋品阳澄湖大闸蟹、冬涮重庆牛油火锅与宁夏滩羊），点击直达对应城市档案；
+* **自定义吃货行程规划**：内置 4 条经典周末吃货线路（川渝麻辣暴走、江南运河早茶线、广佛潮汕寻鲜线、丝路碳水牛羊线），支持自由增删调序（最多 6 城）、绘制生长动画弧线、测算全程公里数，一键复制深链或导出 **PNG 吃货攻略长图**；
+* **随机寻味**：搜索框旁提供「随机寻味」按钮，优先飞往尚未点亮的美食名城开启探索。
+
+![四季时令风物预览](assets/preview_season.png)
+
+![自定义吃货行程规划预览](assets/preview_trip.png)
+
+---
+
+### 5. 「食味护照」与「风味盲猜」互动挑战
 * **我的食味护照**：在城市卡片点击「点亮」即可收集印章（本地 `localStorage` 持久化），自动统计七大区探索进度、实时计算你的**个人五味偏好画像**，并支持生成分享深链与导出 PNG 护照长图；
 * **风味盲猜（古今风物小试）**：隐藏地图所有城市名，凭 3 条渐进风土与史料线索盲猜扎针，按大圆距离评分并授予「御膳大总管」「随园食客」等称号。
 
@@ -82,7 +93,9 @@
 ### 零坐标分享链接（URL 参数）
 * **打开某座城市档案**：[`?city=chengdu`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?city=chengdu) / [`?city=潮州`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?city=%E6%BD%AE%E5%B7%9E) / [`?city=huangshan`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?city=huangshan)
 * **双城味觉 PK**：[`?city=tianshui&compare=chengdu`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?city=tianshui&compare=chengdu) / [`?city=chengdu&compare=shunde`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?city=chengdu&compare=shunde)
-* **打开迁徙路线**：[`?route=chili`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?route=chili) / [`?route=noodles`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?route=noodles) / [`?route=sushi`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?route=sushi)
+* **打开迁徙路线（带飞线生长动画）**：[`?route=chili`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?route=chili) / [`?route=noodles`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?route=noodles) / [`?route=sushi`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?route=sushi)
+* **四季时令风物**：[`?season=spring`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?season=spring) / [`?season=summer`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?season=summer) / [`?season=autumn`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?season=autumn) / [`?season=winter`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?season=winter)
+* **自定义吃货行程**：[`?trip=chengdu,leshan,zigong,chongqing`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?trip=chengdu,leshan,zigong,chongqing) / [`?trip=yangzhou,nanjing,suzhou,hangzhou`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?trip=yangzhou,nanjing,suzhou,hangzhou)
 * **按风味一键筛选**：[`?flavor=辣`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?flavor=%E8%BE%A3) / [`?flavor=鲜`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?flavor=%E9%B2%9C) / [`?flavor=茶`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?flavor=%E8%8C%B6) / [`?flavor=gi`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?flavor=gi)
 * **分享已点亮美食足迹**：[`?visited=chengdu,xian,shunde,huangshan`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?visited=chengdu,xian,shunde,huangshan)
 * **直接开启盲猜挑战**：[`?quiz=flavor`](https://yanglinzhen1022.github.io/flavors-of-china-migration-atlas/?quiz=flavor)
@@ -152,11 +165,12 @@ shiwei-atlas/
 │   ├── cities_bundle.json      # 构建脚本自动生成的单文件汇总包
 │   ├── eras.json               # 6 大时期、24 个节点与动态风味大区多边形
 │   ├── routes.json             # 8 条物种/商道/食客迁徙路线
+│   ├── seasons.json            # 春夏秋冬四季时令风物指南
 │   └── geo/                    # 34 省简化边界 + 江河/古道/山脉脊梁
 ├── src/
 │   ├── core/                   # 墨卡托投影、全域检索、URL 深链状态
 │   ├── map/                    # 相机控制（rAF/双指捏合）、SVG 渲染与 8 向避让引擎
-│   ├── ui/                     # 城市卡片、双城 PK、食味护照、盲猜、Canvas 长图导出
+│   ├── ui/                     # 城市卡片、双城 PK、四季时令、吃货行程、食味护照、盲猜、Canvas 长图导出
 │   └── api/                    # window.shiweiAPI & WebMCP 注册
 ├── scripts/
 │   ├── build_bundle.js         # 打包城市数据并生成 67 个静态 SEO 专题页
